@@ -2,70 +2,174 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Laporan Bangkom ASN</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         body { background-color: #f8f9fa; font-family: Arial, sans-serif; }
-        .token-box { background-color: #fff3f3; border: 1px solid #dc3545; padding: 15px; border-radius: 5px; margin-top: 20px;}
+        .card { box-shadow: 0 4px 8px rgba(0,0,0,0.1); border: none; margin-bottom: 20px; }
+        .header-title { background-color: #0d6efd; color: white; padding: 15px; border-radius: 5px 5px 0 0; }
+        .form-label { font-weight: bold; font-size: 0.9em; }
+        .month-input { max-width: 80px; }
+        .summary-box { background-color: #e9ecef; padding: 15px; border-radius: 5px; font-weight: bold; text-align: center; }
     </style>
 </head>
 <body>
-<div class="token-box">
-    <label class="form-label text-danger">⚙️ GITHUB TOKEN (Wajib diisi)</label>
-    <input type="password" id="githubTokenInput" class="form-control" placeholder="ghp_...">
+
+<div class="container mt-4 mb-5">
+    <div class="card">
+        <div class="header-title text-center">
+            <h4 class="mb-0">FORM LAPORAN PENGEMBANGAN KOMPETENSI ASN (BANGKOM)</h4>
+            <p class="mb-0">Badan Penanggulangan Bencana Daerah (BPBD)</p>
+        </div>
+        <div class="card-body">
+            <div class="row mb-4">
+                <div class="col-md-12">
+                    <label class="form-label text-primary">PILIH NAMA PEGAWAI</label>
+                    <select id="selectNama" class="form-select form-select-lg border-primary">
+                        <option value="">-- Ketik atau Pilih Nama Pegawai --</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6 mb-3"><label class="form-label">NIP</label><input type="text" id="nip" class="form-control" readonly></div>
+                <div class="col-md-6 mb-3"><label class="form-label">Jabatan</label><input type="text" id="jabatan" class="form-control" readonly></div>
+                <div class="col-md-6 mb-3"><label class="form-label">Rumpun Jabatan</label><input type="text" id="rumpun" class="form-control" readonly></div>
+                <div class="col-md-6 mb-3"><label class="form-label">Status</label><input type="text" id="status" class="form-control" readonly></div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6 mb-3"><label class="form-label text-danger">Target Minimal JP</label><input type="number" id="targetJp" class="form-control fw-bold" readonly value="20"></div>
+                <div class="col-md-6 mb-3"><label class="form-label text-danger">Target Minimal Sertifikat</label><input type="number" id="targetSertifikat" class="form-control fw-bold" readonly value="9"></div>
+            </div>
+
+            <hr>
+
+            <h5 class="mb-3">Realisasi Bulanan</h5>
+            <div class="table-responsive">
+                <table class="table table-bordered text-center align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Bulan</th>
+                            <th>Jan</th><th>Feb</th><th>Mar</th><th>Apr</th><th>Mei</th><th>Jun</th>
+                            <th>Jul</th><th>Ags</th><th>Sep</th><th>Okt</th><th>Nov</th><th>Des</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="fw-bold">JP</td>
+                            <td><input type="number" class="form-control month-input jp-input" value="0" readonly></td>
+                            <td><input type="number" class="form-control month-input jp-input" value="0" readonly></td>
+                            <td><input type="number" class="form-control month-input jp-input" value="0" readonly></td>
+                            <td><input type="number" class="form-control month-input jp-input" value="0" readonly></td>
+                            <td><input type="number" class="form-control month-input jp-input" value="0" readonly></td>
+                            <td><input type="number" class="form-control month-input jp-input" value="0" readonly></td>
+                            <td><input type="number" class="form-control month-input jp-input" value="0" readonly></td>
+                            <td><input type="number" class="form-control month-input jp-input" value="0" readonly></td>
+                            <td><input type="number" class="form-control month-input jp-input" value="0" readonly></td>
+                            <td><input type="number" class="form-control month-input jp-input" value="0" readonly></td>
+                            <td><input type="number" class="form-control month-input jp-input" value="0" readonly></td>
+                            <td><input type="number" class="form-control month-input jp-input" value="0" readonly></td>
+                        </tr>
+                        <tr>
+                            <td class="fw-bold">Sertifikat</td>
+                            <td><input type="number" class="form-control month-input sert-input" value="0" readonly></td>
+                            <td><input type="number" class="form-control month-input sert-input" value="0" readonly></td>
+                            <td><input type="number" class="form-control month-input sert-input" value="0" readonly></td>
+                            <td><input type="number" class="form-control month-input sert-input" value="0" readonly></td>
+                            <td><input type="number" class="form-control month-input sert-input" value="0" readonly></td>
+                            <td><input type="number" class="form-control month-input sert-input" value="0" readonly></td>
+                            <td><input type="number" class="form-control month-input sert-input" value="0" readonly></td>
+                            <td><input type="number" class="form-control month-input sert-input" value="0" readonly></td>
+                            <td><input type="number" class="form-control month-input sert-input" value="0" readonly></td>
+                            <td><input type="number" class="form-control month-input sert-input" value="0" readonly></td>
+                            <td><input type="number" class="form-control month-input sert-input" value="0" readonly></td>
+                            <td><input type="number" class="form-control month-input sert-input" value="0" readonly></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="row mt-4">
+                <div class="col-md-6"><div class="summary-box text-success">Total Capaian JP: <span id="totalJp">0</span> / <span id="displayTargetJp">20</span></div></div>
+                <div class="col-md-6"><div class="summary-box text-primary">Total Capaian Sertifikat: <span id="totalSert">0</span> / 9</div></div>
+            </div>
+
+            <hr class="mt-4">
+
+            <div class="d-flex justify-content-between mt-4">
+                <button type="button" class="btn btn-primary" onclick="downloadExcel()">Download Excel</button>
+                <button type="button" class="btn btn-success" onclick="simpanKeGithub()">Simpan ke GitHub</button>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
+document.addEventListener("DOMContentLoaded", function() {
+    const dataPegawai = [{"nama": "Drs.STEFANUS TRIADI ATMONO, M.Si.", "nip": "197009071990031002", "jabatan": "Kepala Pelaksana BPBD", "rumpun": "JPT", "status": "PNS"}, {"nama": "Drs. AGUNG WIDODO", "nip": "196906011994031006", "jabatan": "Kabid. Pencegahan, Kesiapsiagaan, dan Kedaruratan", "rumpun": "ADMINISTRATOR", "status": "PNS"}]; // Singkat untuk testing
+    
+    window.dataPegawai = dataPegawai;
+    const selectNama = document.getElementById('selectNama');
+    dataPegawai.forEach(p => {
+        let opt = document.createElement('option');
+        opt.value = p.nip; opt.text = p.nama;
+        selectNama.appendChild(opt);
+    });
+});
+
 async function simpanKeGithub() {
-    const GITHUB_TOKEN = document.getElementById('githubTokenInput').value.trim();
-    if (!GITHUB_TOKEN) { alert("Isi Token!"); return; }
-
-    const nipPegawai = document.getElementById('selectNama').value;
-    // ... (Kumpulkan data recordDatabase seperti sebelumnya) ...
-    // Anggap recordDatabase sudah terisi
-
+    // PASTE TOKEN BARU DI SINI
+    const GITHUB_TOKEN = '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'; 
     const OWNER = 'umpegbpbd';
     const REPO = 'bangkom';
     const PATH = 'database_bangkom.json';
-    const url = `https://api.github.com/repos/${OWNER}/${REPO}/contents/${PATH}`;
+
+    const nip = document.getElementById('selectNama').value;
+    if(!nip) { alert("Pilih pegawai!"); return; }
+
+    const record = { nip: nip, nama: document.getElementById('selectNama').options[document.getElementById('selectNama').selectedIndex].text, time: new Date().toISOString() };
 
     try {
-        // Cek file
-        let fileSha = null;
-        let existingData = {};
+        const url = `https://api.github.com/repos/${OWNER}/${REPO}/contents/${PATH}`;
         
-        const res = await fetch(url, { headers: { 'Authorization': `Bearer ${GITHUB_TOKEN}` } });
+        // Cek file
+        const res = await fetch(url, { headers: { 'Authorization': `token ${GITHUB_TOKEN}` }});
+        let sha = null;
+        let existingData = {};
+
         if (res.ok) {
             const data = await res.json();
-            fileSha = data.sha;
+            sha = data.sha;
             existingData = JSON.parse(atob(data.content));
         }
 
-        // Update data
-        existingData[nipPegawai] = recordDatabase;
+        existingData[nip] = record;
 
-        // Kirim
-        const response = await fetch(url, {
+        // Kirim data
+        const put = await fetch(url, {
             method: 'PUT',
-            headers: { 
-                'Authorization': `Bearer ${GITHUB_TOKEN}`,
-                'Content-Type': 'application/json' 
-            },
+            headers: { 'Authorization': `token ${GITHUB_TOKEN}`, 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                message: "Update database",
+                message: "Update data via Bangkom App",
                 content: btoa(JSON.stringify(existingData, null, 2)),
-                sha: fileSha
+                sha: sha
             })
         });
 
-        if (response.ok) alert("Data Tersimpan!");
+        if (put.ok) alert("Berhasil disimpan!");
         else {
-            const err = await response.json();
-            alert("Error: " + err.message);
+            const err = await put.json();
+            alert("Gagal: " + err.message);
         }
-    } catch (e) { alert("Error: " + e.message); }
+    } catch (e) {
+        alert("Error: " + e.message);
+    }
 }
+
+function downloadExcel() { alert("Download Excel..."); }
 </script>
 </body>
 </html>
