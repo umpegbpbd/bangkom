@@ -290,7 +290,7 @@ async function loadDatabaseGithub() {
     document.getElementById('loadingInfo').style.display = 'block';
     try {
         const url = `https://api.github.com/repos/${OWNER}/${REPO}/contents/${PATH}`;
-        const res = await fetch(url, { headers: { 'Authorization': `Bearer ${GITHUB_TOKEN}`, 'Accept': 'application/vnd.github.v3+json' }});
+        const res = await fetch(url, { headers: { 'Authorization': `Bearer ${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}`, 'Accept': 'application/vnd.github.v3+json' }});
         if(res.ok) {
             const data = await res.json();
             window.githubSha = data.sha;
