@@ -199,7 +199,19 @@ document.addEventListener("DOMContentLoaded", function() {
             inputJabatan.value = pegawai.jabatan;
             inputRumpun.value = pegawai.rumpun;
             inputStatus.value = pegawai.status;
-            document.getElementById('linkDrive').value = ""; 
+            
+            // Cek apakah data user ini sudah pernah di-save di Local Storage
+            const savedDb = JSON.parse(localStorage.getItem('DatabaseBangkom')) || {};
+            if(savedDb[selectedNip]) {
+                const myData = savedDb[selectedNip];
+                document.getElementById('keikutsertaanPertama').value = myData.keikutsertaan_pertama || "";
+                document.getElementById('updateSipka').value = myData.update_sipka || "";
+                document.getElementById('linkDrive').value = myData.link_drive_sertifikat || "";
+            } else {
+                document.getElementById('keikutsertaanPertama').value = "";
+                document.getElementById('updateSipka').value = "";
+                document.getElementById('linkDrive').value = "";
+            }
 
             // LOGIKA: Update Target JP berdasarkan Status (PNS / PPPK)
             let newTargetJp = 20; // Default PNS
@@ -221,13 +233,15 @@ document.addEventListener("DOMContentLoaded", function() {
             inputStatus.value = "";
             targetJpInput.value = 20; 
             displayTargetJp.innerText = 20;
+            document.getElementById('keikutsertaanPertama').value = "";
+            document.getElementById('updateSipka').value = "";
+            document.getElementById('linkDrive').value = "";
         }
         
-        // Panggil ulang kalkulasi persentase dengan target JP yang baru
         calculateTotals();
     });
 
-    // Kalkulasi Otomatis
+    // Kalkulasi Otomatis (Meskipun Input Bulan Read-Only, rumus tetap terpasang jika nanti database di-load otomatis)
     const jpInputs = document.querySelectorAll('.jp-input');
     const sertInputs = document.querySelectorAll('.sert-input');
 
@@ -238,11 +252,9 @@ document.addEventListener("DOMContentLoaded", function() {
         let totalSert = 0;
         sertInputs.forEach(input => { totalSert += (parseFloat(input.value) || 0); });
 
-        // Ambil target JP dinamis dari input field yang sudah di-update sebelumnya
         const currentTargetJp = parseFloat(targetJpInput.value) || 20; 
         const targetSert = 9;
 
-        // Hitung persentase
         let persenJp = (totalJp / currentTargetJp) * 100;
         let persenSert = (totalSert / targetSert) * 100;
 
@@ -257,14 +269,129 @@ document.addEventListener("DOMContentLoaded", function() {
     sertInputs.forEach(input => input.addEventListener('input', calculateTotals));
 });
 
-// Fungsi simpan dikeluarkan agar dapat diakses oleh button onclick
-function simpanKeGithub() {
+// FUNGSI UTAMA: MENYIMPAN DATABASE (JSON)
+async function simpanKeGithub() {
     const selectNama = document.getElementById('selectNama');
     if(!selectNama.value) {
         alert("Silakan pilih pegawai terlebih dahulu!");
         return;
     }
-    alert("Data " + selectNama.options[selectNama.selectedIndex].text + " siap di-commit ke GitHub!\n(Gunakan fetch API ke GitHub untuk menyimpan JSON).");
+
+    // 1. Kumpulkan Data Identitas
+    const nipPegawai = selectNama.value;
+    const namaPegawai = selectNama.options[selectNama.selectedIndex].text;
+    const targetJp = document.getElementById('targetJp').value;
+    const targetSert = document.getElementById('targetSertifikat').value;
+
+    // 2. Kumpulkan Array Input Bulanan (Saat ini di-set 0 karena read-only sesuai arahan)
+    const jpInputs = document.querySelectorAll('.jp-input');
+    const sertInputs = document.querySelectorAll('.sert-input');
+    let arrJp = []; jpInputs.forEach(input => arrJp.push(parseFloat(input.value) || 0));
+    let arrSert = []; sertInputs.forEach(input => arrSert.push(parseFloat(input.value) || 0));
+
+    // 3. Kumpulkan Total & Persentase
+    const totalJp = document.getElementById('totalJp').innerText;
+    const persenJp = document.getElementById('persenJp').innerText;
+    const totalSert = document.getElementById('totalSert').innerText;
+    const persenSert = document.getElementById('persenSert').innerText;
+
+    // 4. Kumpulkan Ekstra
+    const blnPertama = document.getElementById('keikutsertaanPertama').value;
+    const statSipka = document.getElementById('updateSipka').value;
+    const linkDrive = document.getElementById('linkDrive').value;
+
+    // 5. Susun menjadi Format Database Record JSON
+    const recordDatabase = {
+        nip: nipPegawai,
+        nama: namaPegawai,
+        jabatan: document.getElementById('jabatan').value,
+        rumpun_jabatan: document.getElementById('rumpun').value,
+        status: document.getElementById('status').value,
+        target_minimal_jp: targetJp,
+        target_minimal_sertifikat: targetSert,
+        realisasi_jp_bulanan: {
+            Jan: arrJp[0], Feb: arrJp[1], Mar: arrJp[2], Apr: arrJp[3], Mei: arrJp[4], Jun: arrJp[5],
+            Jul: arrJp[6], Ags: arrJp[7], Sep: arrJp[8], Okt: arrJp[9], Nov: arrJp[10], Des: arrJp[11]
+        },
+        realisasi_sertifikat_bulanan: {
+            Jan: arrSert[0], Feb: arrSert[1], Mar: arrSert[2], Apr: arrSert[3], Mei: arrSert[4], Jun: arrSert[5],
+            Jul: arrSert[6], Ags: arrSert[7], Sep: arrSert[8], Okt: arrSert[9], Nov: arrSert[10], Des: arrSert[11]
+        },
+        total_capaian_jp: totalJp,
+        persentase_jp: persenJp,
+        total_capaian_sertifikat: totalSert,
+        persentase_sertifikat: persenSert,
+        keikutsertaan_pertama: blnPertama,
+        update_sipka: statSipka,
+        link_drive_sertifikat: linkDrive,
+        waktu_update: new Date().toISOString()
+    };
+
+    // ==========================================
+    // PENYIMPANAN SEMENTARA (LOCAL STORAGE)
+    // ==========================================
+    // Fungsi ini membuat browser Anda langsung bisa berlaku layaknya database
+    let databaseLokal = JSON.parse(localStorage.getItem('DatabaseBangkom')) || {};
+    databaseLokal[nipPegawai] = recordDatabase; 
+    localStorage.setItem('DatabaseBangkom', JSON.stringify(databaseLokal));
+    
+    console.log("Database Record Terbentuk: ", recordDatabase);
+    alert(`Data milik ${namaPegawai} berhasil disiapkan dan direkam dalam format Database JSON Lokal!\n\n(Buka 'Console' di browser untuk melihat struktur JSON-nya)`);
+
+    // ==========================================
+    // LOGIKA API GITHUB UNTUK PUSH DATA NYATA
+    // ==========================================
+    // Hapus tanda komentar (/* ... */) jika token GitHub Anda sudah siap.
+    /*
+    const GITHUB_TOKEN = 'MASUKKAN_TOKEN_DISINI'; 
+    const OWNER = 'USERNAME_GITHUB_ANDA';
+    const REPO = 'NAMA_REPO_ANDA';
+    const PATH = 'database_bangkom.json';
+
+    try {
+        const getUrl = `https://api.github.com/repos/${OWNER}/${REPO}/contents/${PATH}`;
+        let fileSha = "";
+        
+        // 1. Get file yang sudah ada di repository
+        const getResponse = await fetch(getUrl, {
+            headers: { 'Authorization': `token ${GITHUB_TOKEN}` }
+        });
+        
+        let existingData = {};
+        if (getResponse.ok) {
+            const data = await getResponse.json();
+            fileSha = data.sha;
+            existingData = JSON.parse(atob(data.content)); // Decode Base64 dari file Github
+        }
+
+        // 2. Gabungkan database yang baru dengan yang lama
+        existingData[nipPegawai] = recordDatabase;
+
+        // 3. Push File Baru menggunakan encode Base64
+        const updatedContent = btoa(JSON.stringify(existingData, null, 2));
+
+        const putResponse = await fetch(getUrl, {
+            method: 'PUT',
+            headers: {
+                'Authorization': `token ${GITHUB_TOKEN}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                message: `Update Data Laporan Bangkom - NIP: ${nipPegawai}`,
+                content: updatedContent,
+                sha: fileSha || undefined 
+            })
+        });
+
+        if (putResponse.ok) {
+            alert("Database berhasil dikirim/sinkronisasi ke Server GitHub!");
+        } else {
+            alert("Terjadi kesalahan saat sinkronisasi ke Server GitHub.");
+        }
+    } catch (error) {
+        console.error("Terjadi error pada fetch API Github:", error);
+    }
+    */
 }
 </script>
 </body>
