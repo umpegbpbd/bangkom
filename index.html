@@ -55,6 +55,7 @@
 
             <hr>
 
+            <!-- FITUR UPLOAD GOOGLE DRIVE PRIBADI -->
             <div class="upload-box mb-4">
                 <label class="form-label text-success fw-bold">📂 FOLDER GOOGLE DRIVE PRIBADI (UPLOAD SERTIFIKAT)</label>
                 <div class="input-group mb-2">
@@ -169,32 +170,18 @@ const PATH = 'database_bangkom.json';
 window.globalDatabase = {};
 window.githubSha = null;
 
-document.addEventListener("DOMContentLoaded", async function() {
+// Pindah eksekusi UI agar berjalan lebih dulu (Synchronous) sebelum API Call
+document.addEventListener("DOMContentLoaded", function() {
     const dataPegawai = [{"nama": "Drs.STEFANUS TRIADI ATMONO, M.Si.", "nip": "197009071990031002", "jabatan": "Kepala Pelaksana BPBD", "rumpun": "JPT", "status": "PNS"}, {"nama": "Drs. AGUNG WIDODO", "nip": "196906011994031006", "jabatan": "Kabid. Pencegahan, Kesiapsiagaan, dan Kedaruratan", "rumpun": "ADMINISTRATOR", "status": "PNS"}, {"nama": "DWIANA HANDAYANI,SE", "nip": "197807172011012005", "jabatan": "Perencana Ahli Muda", "rumpun": "FUNGSIONAL AHLI", "status": "PNS"}, {"nama": "EDY PURWANTO, SE", "nip": "197208122008010017", "jabatan": "Analis Kebencanaan Ahli Muda", "rumpun": "FUNGSIONAL AHLI", "status": "PNS"}, {"nama": "Bakti Dwi Prasetyo, S.T., M.T.", "nip": "197805272006041020", "jabatan": "Analis Kebencanaan Ahli Muda", "rumpun": "FUNGSIONAL AHLI", "status": "PNS"}, {"nama": "SUDARSONO", "nip": "197112272007011007", "jabatan": "Pengadministrasi Perkantoran", "rumpun": "PELAKSANA KELAS 5", "status": "PNS"}, {"nama": "ANIKMATUL KHOIRIYAH, S.M.", "nip": "198708152011012011", "jabatan": "Penelaah Teknis Kebijakan", "rumpun": "PELAKSANA KELAS 7", "status": "PNS"}, {"nama": "RENY YANTI, S.Pd", "nip": "197812142008012017", "jabatan": "Pengolah data dan informasi", "rumpun": "PELAKSANA KELAS 6", "status": "PNS"}, {"nama": "RIZAL RIZKIANTO, A.Md", "nip": "199510302020121005", "jabatan": "Pengolah data dan informasi", "rumpun": "PELAKSANA KELAS 6", "status": "PNS"}, {"nama": "SUJANTORO", "nip": "197307042012121003", "jabatan": "Pengadministrasi Perkantoran", "rumpun": "PELAKSANA KELAS 5", "status": "PNS"}, {"nama": "WAWAN PURWANTO", "nip": "198507102009011005", "jabatan": "Operator Layanan Operasional", "rumpun": "PELAKSANA KELAS 3", "status": "PNS"}, {"nama": "Abdurrohman Malik Ibrahim, S.Psi.", "nip": "199604262020121004", "jabatan": "Penata Layanan Operasional", "rumpun": "PELAKSANA KELAS 7", "status": "PNS"}, {"nama": "Khoirul Anam A.Md", "nip": "198202262011011011", "jabatan": "Pengolah data dan informasi", "rumpun": "PELAKSANA KELAS 6", "status": "PNS"}, {"nama": "PRABOWO", "nip": "197412041997031003", "jabatan": "Operator Layanan Operasional", "rumpun": "PELAKSANA KELAS 5", "status": "PNS"}, {"nama": "TONI MURTONO, A.Md", "nip": "198301022011011009", "jabatan": "Pengolah data dan informasi", "rumpun": "PELAKSANA KELAS 6", "status": "PNS"}, {"nama": "HARI MUSTAPA", "nip": "197605202012121005", "jabatan": "Operator Layanan Operasional", "rumpun": "PELAKSANA KELAS 5", "status": "PNS"}, {"nama": "MUHAMAD CHOLIK", "nip": "197904082011011005", "jabatan": "Operator Layanan Operasional", "rumpun": "PELAKSANA KELAS 5", "status": "PNS"}, {"nama": "Imam Basori, SE", "nip": "196901221991031006", "jabatan": "Penelaah Teknis Kebijakan", "rumpun": "PELAKSANA KELAS 7", "status": "PNS"}, {"nama": "DEDY KURNIAWAN, S.T.", "nip": "199409112022031003", "jabatan": "Penelaah Teknis Kebijakan", "rumpun": "PELAKSANA KELAS 7", "status": "PNS"}, {"nama": "TRI EFENDI", "nip": "198009102007011003", "jabatan": "Operator Layanan Operasional", "rumpun": "PELAKSANA KELAS 3", "status": "PNS"}, {"nama": "SUGENG HARYADI, S.T", "nip": "196912212014061002", "jabatan": "Analis Kebencanaan Ahli Muda", "rumpun": "FUNGSIONAL AHLI", "status": "PNS"}, {"nama": "MISRALI, S.E", "nip": "199304202023211018", "jabatan": "Penata Penanggulangan Bencana Ahli Pertama", "rumpun": "PPPK FUNGSIONAL", "status": "PPPK"}, {"nama": "LUHUR NAWANG SUKMA KUSUMA, S.E.", "nip": "198411262023212019", "jabatan": "Penata Penanggulangan Bencana Ahli Pertama", "rumpun": "PPPK FUNGSIONAL", "status": "PPPK"}, {"nama": "DEDY PEBRI YUSTISIANTO PRATAMA, S.Stat", "nip": "198802272024211007", "jabatan": "Penata Penanggulangan Bencana Ahli Pertama", "rumpun": "PPPK FUNGSIONAL", "status": "PPPK"}, {"nama": "DWI BAROROH BARIDAH, S.Psi", "nip": "199110052024212018", "jabatan": "Penata Penanggulangan Bencana Ahli Pertama", "rumpun": "PPPK FUNGSIONAL", "status": "PPPK"}, {"nama": "DIAN LUPI YUSTIKASARI, A.Md.", "nip": "199806182025062012", "jabatan": "Pranata Komputer Terampil", "rumpun": "FUNGSIONAL TERAMPIL", "status": "PNS"}, {"nama": "ARDEA WIDIANTO ARI HIDAYAT, S.Psi.", "nip": "200001102025061004", "jabatan": "Analis Kebencanaan Ahli Pertama", "rumpun": "FUNGSIONAL AHLI", "status": "PNS"}, {"nama": "HADI PURWANTO", "nip": "198407172025211013", "jabatan": "Operator Layanan Operasional", "rumpun": "PPPK TEKNIS", "status": "PPPK"}, {"nama": "ARDY DESTA EKA PUTRA", "nip": "199212312025211008", "jabatan": "Operator Layanan Operasional", "rumpun": "PPPK TEKNIS", "status": "PPPK"}, {"nama": "AGUS SUGHULIN", "nip": "197808082025211006", "jabatan": "Operator Layanan Operasional", "rumpun": "PPPK TEKNIS", "status": "PPPK"}, {"nama": "ADI MUJIPRASETYO", "nip": "199804142025211016", "jabatan": "Operator Layanan Operasional", "rumpun": "PPPK TEKNIS", "status": "PPPK"}, {"nama": "SARI MUMANTI", "nip": "198808242025212018", "jabatan": "Operator Layanan Operasional", "rumpun": "PPPK TEKNIS", "status": "PPPK"}, {"nama": "IDA APRILIYA", "nip": "199004162025212020", "jabatan": "Operator Layanan Operasional", "rumpun": "PPPK TEKNIS", "status": "PPPK"}, {"nama": "ALVIN WAHYU DWISAPUTRA", "nip": "199404122025211011", "jabatan": "Operator Layanan Operasional", "rumpun": "PPPK TEKNIS", "status": "PPPK"}, {"nama": "AFRISKA PRASETYA", "nip": "199104282025211011", "jabatan": "Operator Layanan Operasional", "rumpun": "PPPK TEKNIS", "status": "PPPK"}, {"nama": "GIGIH HIRTAGARA", "nip": "199205312025211004", "jabatan": "Operator Layanan Operasional", "rumpun": "PPPK TEKNIS", "status": "PPPK"}, {"nama": "IMAM MURODI", "nip": "198509152025211009", "jabatan": "Operator Layanan Operasional", "rumpun": "PPPK TEKNIS", "status": "PPPK"}, {"nama": "GUSTA MULTI PRATAMA", "nip": "199208062025211012", "jabatan": "Operator Layanan Operasional", "rumpun": "PPPK TEKNIS", "status": "PPPK"}, {"nama": "YONA PRAMISTA MAHARDIKA", "nip": "199903312025211007", "jabatan": "Operator Layanan Operasional", "rumpun": "PPPK TEKNIS", "status": "PPPK"}, {"nama": "KURNIA RIAN RACHMASARI", "nip": "199302222025212019", "jabatan": "Operator Layanan Operasional", "rumpun": "PPPK TEKNIS", "status": "PPPK"}, {"nama": "YOHANTAR LUTFI ARISANDHI", "nip": "199106182025211019", "jabatan": "Operator Layanan Operasional", "rumpun": "PPPK TEKNIS", "status": "PPPK"}, {"nama": "YENI DWI LESTARI", "nip": "199404062025212024", "jabatan": "Operator Layanan Operasional", "rumpun": "PPPK TEKNIS", "status": "PPPK"}, {"nama": "AYU FERISTARINI", "nip": "199402072025212019", "jabatan": "Pengadministrasi Perkantoran", "rumpun": "PPPK TEKNIS", "status": "PPPK"}, {"nama": "SITI ROBIAH", "nip": "199410012025212021", "jabatan": "Pengadministrasi Perkantoran", "rumpun": "PPPK TEKNIS", "status": "PPPK"}, {"nama": "DWI MARTASARININGSIH", "nip": "199403032025212025", "jabatan": "Pengadministrasi Perkantoran", "rumpun": "PPPK TEKNIS", "status": "PPPK"}, {"nama": "ANDRIK PRAYUGO", "nip": "199112152025211035", "jabatan": "Operator Layanan Operasional", "rumpun": "PPPK TEKNIS", "status": "PPPK"}, {"nama": "NIKO KURNIAWAN", "nip": "198508312025211037", "jabatan": "Pengelola Umum Operasional", "rumpun": "PPPK TEKNIS", "status": "PPPK"}, {"nama": "PRENDICHANATA", "nip": "199209072025211044", "jabatan": "Pengelola Umum Operasional", "rumpun": "PPPK TEKNIS", "status": "PPPK"}, {"nama": "HINN BONKE SAMALIWU", "nip": "199601042025211025", "jabatan": "Operator Layanan Operasional", "rumpun": "PPPK TEKNIS", "status": "PPPK"}];
 
-    // Buat link GDrive terpusat (Simulasi format folder untuk masing-masing NIP)
+    // Buat link GDrive terpusat untuk masing-masing NIP
     dataPegawai.forEach(p => {
         p.folder_drive = `https://drive.google.com/drive/u/0/search?q=${p.nip}_Sertifikat`;
     });
 
     window.dataPegawai = dataPegawai; 
 
-    // Ambil Data dari GitHub saat halaman pertama dibuka
-    document.getElementById('loadingInfo').style.display = 'block';
-    try {
-        const url = `https://api.github.com/repos/${OWNER}/${REPO}/contents/${PATH}`;
-        const res = await fetch(url, { headers: { 'Authorization': `Bearer ${GITHUB_TOKEN}`, 'Accept': 'application/vnd.github.v3+json' }});
-        if(res.ok) {
-            const data = await res.json();
-            window.githubSha = data.sha;
-            window.globalDatabase = JSON.parse(atob(data.content));
-        }
-    } catch(e) {
-        console.log("Database belum ada / error: ", e);
-    }
-    document.getElementById('loadingInfo').style.display = 'none';
-
-    // Populate Dropdown
+    // LANGKAH 1: Langsung munculkan nama di Dropdown (Tanpa Menunggu)
     const selectNama = document.getElementById('selectNama');
     dataPegawai.forEach(pegawai => {
         let option = document.createElement('option');
@@ -203,6 +190,7 @@ document.addEventListener("DOMContentLoaded", async function() {
         selectNama.appendChild(option);
     });
 
+    // Event Listener Perubahan Nama
     selectNama.addEventListener('change', function() {
         const selectedNip = this.value;
         const pegawai = dataPegawai.find(p => p.nip === selectedNip);
@@ -212,24 +200,19 @@ document.addEventListener("DOMContentLoaded", async function() {
             document.getElementById('jabatan').value = pegawai.jabatan;
             document.getElementById('rumpun').value = pegawai.rumpun;
             document.getElementById('status').value = pegawai.status;
-            
-            // Set otomatis Link Drive Personal untuk pegawai tersebut
             document.getElementById('linkDrive').value = pegawai.folder_drive;
 
-            // Load Target
             let newTargetJp = (pegawai.status && pegawai.status.toUpperCase() === "PPPK") ? 24 : 20;
             document.getElementById('targetJp').value = newTargetJp;
             document.getElementById('displayTargetJp').innerText = newTargetJp;
 
-            // Load Data Database Server (Jika Ada)
+            // Load Database Online (Jika Sudah Terdownload)
             const myData = window.globalDatabase[selectedNip] || {};
             document.getElementById('keikutsertaanPertama').value = myData.keikutsertaan_pertama || "";
             document.getElementById('updateSipka').value = myData.update_sipka || "";
             
-            // Load Realisasi Bulan-Bulan (Read-Only) dari Database Admin
             const rJP = myData.realisasi_jp_bulanan || {};
             const rSert = myData.realisasi_sertifikat_bulanan || {};
-            
             const jpInputs = document.querySelectorAll('.jp-input');
             const sertInputs = document.querySelectorAll('.sert-input');
             const months = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Ags", "Sep", "Okt", "Nov", "Des"];
@@ -238,19 +221,43 @@ document.addEventListener("DOMContentLoaded", async function() {
                 jpInputs[i].value = rJP[months[i]] || 0;
                 sertInputs[i].value = rSert[months[i]] || 0;
             }
-
         } else {
             document.querySelectorAll('.form-control').forEach(el => { if(el.id!=='targetJp' && el.id!=='targetSertifikat') el.value = "" });
             document.querySelectorAll('.month-input').forEach(el => el.value = 0);
             document.getElementById('targetJp').value = 20; 
             document.getElementById('displayTargetJp').innerText = 20;
         }
-        
         calculateTotals();
     });
+
+    // LANGKAH 2: Load Database Online secara background
+    loadDatabaseGithub();
 });
 
-// Fungsi Buka Folder
+// Load Database Github secara terpisah agar UI tidak freeze
+async function loadDatabaseGithub() {
+    document.getElementById('loadingInfo').style.display = 'block';
+    try {
+        const url = `https://api.github.com/repos/${OWNER}/${REPO}/contents/${PATH}`;
+        const res = await fetch(url, { headers: { 'Authorization': `Bearer ${GITHUB_TOKEN}`, 'Accept': 'application/vnd.github.v3+json' }});
+        if(res.ok) {
+            const data = await res.json();
+            window.githubSha = data.sha;
+            window.globalDatabase = JSON.parse(atob(data.content));
+            
+            // Refresh tampilan jika user sudah telanjur memilih nama
+            const select = document.getElementById('selectNama');
+            if (select.value) {
+                const event = new Event('change');
+                select.dispatchEvent(event);
+            }
+        }
+    } catch(e) {
+        console.log("Database belum ada / error loading: ", e);
+    }
+    document.getElementById('loadingInfo').style.display = 'none';
+}
+
 function bukaFolderDrive() {
     const link = document.getElementById('linkDrive').value;
     if(!link) {
@@ -296,7 +303,7 @@ async function simpanKeGithub() {
         waktu_update: new Date().toISOString()
     };
 
-    // Ambil JP/Sertifikat existing dari DOM (yang di-load dari Admin) agar tidak tertimpa kosong
+    // Ambil JP/Sertifikat existing dari DOM (yang di-load dari Admin)
     const jpInputs = document.querySelectorAll('.jp-input');
     const sertInputs = document.querySelectorAll('.sert-input');
     const months = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Ags", "Sep", "Okt", "Nov", "Des"];
