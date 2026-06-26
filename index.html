@@ -232,4 +232,185 @@ document.addEventListener("DOMContentLoaded", async function() {
             
             const jpInputs = document.querySelectorAll('.jp-input');
             const sertInputs = document.querySelectorAll('.sert-input');
-            const months = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Ags", "Sep", "O
+            const months = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Ags", "Sep", "Okt", "Nov", "Des"];
+            
+            for(let i=0; i<12; i++) {
+                jpInputs[i].value = rJP[months[i]] || 0;
+                sertInputs[i].value = rSert[months[i]] || 0;
+            }
+
+        } else {
+            document.querySelectorAll('.form-control').forEach(el => { if(el.id!=='targetJp' && el.id!=='targetSertifikat') el.value = "" });
+            document.querySelectorAll('.month-input').forEach(el => el.value = 0);
+            document.getElementById('targetJp').value = 20; 
+            document.getElementById('displayTargetJp').innerText = 20;
+        }
+        
+        calculateTotals();
+    });
+});
+
+// Fungsi Buka Folder
+function bukaFolderDrive() {
+    const link = document.getElementById('linkDrive').value;
+    if(!link) {
+        alert("Silakan pilih Nama Pegawai Anda terlebih dahulu!");
+        return;
+    }
+    window.open(link, '_blank');
+}
+
+function calculateTotals() {
+    let totalJp = 0, totalSert = 0;
+    document.querySelectorAll('.jp-input').forEach(input => { totalJp += (parseFloat(input.value) || 0); });
+    document.querySelectorAll('.sert-input').forEach(input => { totalSert += (parseFloat(input.value) || 0); });
+
+    const targetJp = parseFloat(document.getElementById('targetJp').value) || 20; 
+    const targetSert = 9;
+
+    document.getElementById('totalJp').innerText = totalJp;
+    document.getElementById('persenJp').innerText = ((totalJp / targetJp) * 100).toFixed(2) + '%';
+    document.getElementById('totalSert').innerText = totalSert;
+    document.getElementById('persenSert').innerText = ((totalSert / targetSert) * 100).toFixed(2) + '%';
+}
+
+// FUNGSI UTAMA: MENYIMPAN DATABASE KE GITHUB
+async function simpanKeGithub() {
+    const selectNama = document.getElementById('selectNama');
+    if(!selectNama.value) { alert("Silakan pilih pegawai terlebih dahulu!"); return; }
+
+    const nipPegawai = selectNama.value;
+    
+    // Siapkan object data update
+    const recordDatabase = {
+        nip: nipPegawai,
+        nama: selectNama.options[selectNama.selectedIndex].text,
+        jabatan: document.getElementById('jabatan').value,
+        rumpun_jabatan: document.getElementById('rumpun').value,
+        status: document.getElementById('status').value,
+        target_minimal_jp: document.getElementById('targetJp').value,
+        target_minimal_sertifikat: document.getElementById('targetSertifikat').value,
+        keikutsertaan_pertama: document.getElementById('keikutsertaanPertama').value,
+        update_sipka: document.getElementById('updateSipka').value,
+        link_drive_sertifikat: document.getElementById('linkDrive').value,
+        waktu_update: new Date().toISOString()
+    };
+
+    // Ambil JP/Sertifikat existing dari DOM (yang di-load dari Admin) agar tidak tertimpa kosong
+    const jpInputs = document.querySelectorAll('.jp-input');
+    const sertInputs = document.querySelectorAll('.sert-input');
+    const months = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Ags", "Sep", "Okt", "Nov", "Des"];
+    recordDatabase.realisasi_jp_bulanan = {};
+    recordDatabase.realisasi_sertifikat_bulanan = {};
+    
+    for(let i=0; i<12; i++){
+        recordDatabase.realisasi_jp_bulanan[months[i]] = parseFloat(jpInputs[i].value) || 0;
+        recordDatabase.realisasi_sertifikat_bulanan[months[i]] = parseFloat(sertInputs[i].value) || 0;
+    }
+    
+    recordDatabase.total_capaian_jp = document.getElementById('totalJp').innerText;
+    recordDatabase.persentase_jp = document.getElementById('persenJp').innerText;
+    recordDatabase.total_capaian_sertifikat = document.getElementById('totalSert').innerText;
+    recordDatabase.persentase_sertifikat = document.getElementById('persenSert').innerText;
+
+    // Masukkan update pegawai ini ke database global
+    window.globalDatabase[nipPegawai] = recordDatabase;
+
+    try {
+        const url = `https://api.github.com/repos/${OWNER}/${REPO}/contents/${PATH}`;
+        const updatedContent = btoa(unescape(encodeURIComponent(JSON.stringify(window.globalDatabase, null, 2))));
+
+        const putResponse = await fetch(url, {
+            method: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${GITHUB_TOKEN}`,
+                'Accept': 'application/vnd.github.v3+json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                message: `User Submit Laporan Bangkom - NIP: ${nipPegawai}`,
+                content: updatedContent,
+                sha: window.githubSha || undefined 
+            })
+        });
+
+        if (putResponse.ok) {
+            const result = await putResponse.json();
+            window.githubSha = result.content.sha; // Update SHA
+            alert(`✅ SUKSES!\n\nData milik ${recordDatabase.nama} berhasil tersimpan ke sistem pusat!`);
+        } else {
+            const errData = await putResponse.json();
+            alert("Terjadi kesalahan sistem:\n" + (errData.message || "Unknown error"));
+        }
+    } catch (error) {
+        alert("Gagal koneksi server: " + error.message);
+    }
+}
+
+// FUNGSI ADMIN: DOWNLOAD EXCEL PROTECTED
+function downloadExcel() {
+    const password = prompt("Masukkan Password Admin untuk mendownload Laporan:");
+    if(password !== "adminbpbd") {
+        alert("❌ Password Salah! Anda tidak memiliki akses admin.");
+        return;
+    }
+
+    const pegawais = window.dataPegawai;
+    const db = window.globalDatabase;
+    
+    const data = [
+        ["LAPORAN PENGEMBANGAN KOMPETENSI APARATUR SIPIL NEGARA (ASN)"],
+        ["NAMA PERANGKAT DAERAH", ": BADAN PENANGGULANGAN BENCANA DAERAH"],
+        ["BULAN", ": JULI"],
+        ["TAHUN", ": 2026"],
+        [], 
+        ["NO", "NAMA", "NIP", "JABATAN", "RUMPUN JABATAN", "STATUS", "TARGET MINIMAL", "", "JUMLAH JP REALISASI BULAN KE", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "PERSENTASE CAPAIAN", "", "KEIKUTSERTAAN PERTAMA", "UPDATE MELALUI SIPKA/SIMPEG PERSONAL", "LINK SERTIFIKAT PRIBADI"],
+        ["", "", "", "", "", "", "JUMLAH JP", "JUMLAH SERTIFIKAT", "JAN", "", "FEB", "", "MAR", "", "APR", "", "MAY", "", "JUN", "", "JUL", "", "AUG", "", "SEP", "", "OCT", "", "NOV", "", "DEC", "", "JP", "SERTIFIKAT", "", "", ""],
+        ["", "", "", "", "", "", "", "", "JP", "SERT", "JP", "SERT", "JP", "SERT", "JP", "SERT", "JP", "SERT", "JP", "SERT", "JP", "SERT", "JP", "SERT", "JP", "SERT", "JP", "SERT", "JP", "SERT", "JP", "SERT", "", "", "", "", ""],
+        [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37]
+    ];
+    
+    pegawais.forEach((pegawai, index) => {
+        const nip = pegawai.nip;
+        const myData = db[nip] || {};
+        
+        let rowTargetJp = (pegawai.status && pegawai.status.toUpperCase() === "PPPK") ? 24 : 20;
+
+        const rJP = myData.realisasi_jp_bulanan || {};
+        const rSert = myData.realisasi_sertifikat_bulanan || {};
+
+        const row = [
+            index + 1, pegawai.nama, nip, pegawai.jabatan, pegawai.rumpun, pegawai.status,
+            rowTargetJp, 9,           
+            rJP.Jan || "", rSert.Jan || "", rJP.Feb || "", rSert.Feb || "",
+            rJP.Mar || "", rSert.Mar || "", rJP.Apr || "", rSert.Apr || "",
+            rJP.Mei || "", rSert.Mei || "", rJP.Jun || "", rSert.Jun || "",
+            rJP.Jul || "", rSert.Jul || "", rJP.Ags || "", rSert.Ags || "",
+            rJP.Sep || "", rSert.Sep || "", rJP.Okt || "", rSert.Okt || "",
+            rJP.Nov || "", rSert.Nov || "", rJP.Des || "", rSert.Des || "",
+            (myData.persentase_jp || "0%"), (myData.persentase_sertifikat || "0%"),
+            myData.keikutsertaan_pertama || "", myData.update_sipka || "",
+            myData.link_drive_sertifikat || pegawai.folder_drive
+        ];
+        data.push(row);
+    });
+
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.aoa_to_sheet(data);
+    ws['!merges'] = [
+        { s: {r:0, c:0}, e: {r:0, c:10} }, { s: {r:5, c:0}, e: {r:7, c:0} }, { s: {r:5, c:1}, e: {r:7, c:1} }, 
+        { s: {r:5, c:2}, e: {r:7, c:2} }, { s: {r:5, c:3}, e: {r:7, c:3} }, { s: {r:5, c:4}, e: {r:7, c:4} }, 
+        { s: {r:5, c:5}, e: {r:7, c:5} }, { s: {r:5, c:6}, e: {r:5, c:7} }, { s: {r:5, c:8}, e: {r:5, c:31} }, 
+        { s: {r:5, c:32}, e: {r:6, c:33} }, { s: {r:5, c:34}, e: {r:7, c:34} }, { s: {r:5, c:35}, e: {r:7, c:35} }, 
+        { s: {r:5, c:36}, e: {r:7, c:36} }, { s: {r:6, c:8}, e: {r:6, c:9} }, { s: {r:6, c:10}, e: {r:6, c:11} },
+        { s: {r:6, c:12}, e: {r:6, c:13} }, { s: {r:6, c:14}, e: {r:6, c:15} }, { s: {r:6, c:16}, e: {r:6, c:17} }, 
+        { s: {r:6, c:18}, e: {r:6, c:19} }, { s: {r:6, c:20}, e: {r:6, c:21} }, { s: {r:6, c:22}, e: {r:6, c:23} }, 
+        { s: {r:6, c:24}, e: {r:6, c:25} }, { s: {r:6, c:26}, e: {r:6, c:27} }, { s: {r:6, c:28}, e: {r:6, c:29} }, 
+        { s: {r:6, c:30}, e: {r:6, c:31} }  
+    ];
+    XLSX.utils.book_append_sheet(wb, ws, "LAPORAN BANGKOM");
+    XLSX.writeFile(wb, "Rekap_Laporan_Bangkom_BPBD.xlsx");
+}
+</script>
+</body>
+</html>
