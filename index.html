@@ -323,26 +323,19 @@ function downloadAdminReport(isAuto = false) {
         if(password !== "adminbpbd") { alert("Password Salah!"); return; }
     }
 
-    const months = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Ags", "Sep", "Okt", "Nov", "Des"];
-    
-    // Header Lengkap
-    const headers = ["Nama", "NIP", "Jabatan", "Rumpun", "Status", "Target JP", "Target Sertifikat", "Keikutsertaan Pertama", "Update SIPKA"];
-    months.forEach(m => headers.push(m + " JP"));
-    months.forEach(m => headers.push(m + " Sert"));
-    
-    const data = [headers];
-
+    const data = [["Nama", "Jan JP", "Feb JP", "Mar JP", "Apr JP", "Mei JP", "Jun JP", "Update SIPKA", "Waktu Submit"]];
     Object.values(window.globalDatabase).forEach(db => {
-        let row = [
-            db.nama, db.nip, db.jabatan, db.rumpun_jabatan, db.status,
-            db.target_minimal_jp, db.target_minimal_sertifikat,
-            db.keikutsertaan_pertama, db.update_sipka
-        ];
-        
-        months.forEach(m => row.push(db.realisasi_jp_bulanan[m] || 0));
-        months.forEach(m => row.push(db.realisasi_sertifikat_bulanan[m] || 0));
-        
-        data.push(row);
+        data.push([
+            db.nama,
+            db.realisasi_jp_bulanan.Jan || 0,
+            db.realisasi_jp_bulanan.Feb || 0,
+            db.realisasi_jp_bulanan.Mar || 0,
+            db.realisasi_jp_bulanan.Apr || 0,
+            db.realisasi_jp_bulanan.Mei || 0,
+            db.realisasi_jp_bulanan.Jun || 0,
+            db.update_sipka || "-",
+            db.waktu_update || "-"
+        ]);
     });
 
     const ws = XLSX.utils.aoa_to_sheet(data);
@@ -366,7 +359,7 @@ async function simpanKeGist() {
         keikutsertaan_pertama: document.getElementById('keikutsertaanPertama').value,
         update_sipka: document.getElementById('updateSipka').value,
         link_drive_sertifikat: document.getElementById('linkDrive').value,
-        waktu_update: new Date().toISOString()
+        waktu_update: new Date().toLocaleString()
     };
 
     const jpInputs = document.querySelectorAll('.jp-input');
