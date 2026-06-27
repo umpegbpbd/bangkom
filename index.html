@@ -33,7 +33,7 @@
             <div class="row mb-4">
                 <div class="col-md-12">
                     <label class="form-label text-primary">PILIH NAMA PEGAWAI</label>
-                    <select id="selectNama" class="form-select form-select-lg border-primary">
+                    <select id="selectNama" class="form-select form-select-lg border-primary" autocomplete="off">
                         <option value="">-- Ketik atau Pilih Nama Pegawai --</option>
                     </select>
                 </div>
@@ -61,11 +61,16 @@
                     <input type="url" id="linkDrive" class="form-control bg-white" readonly placeholder="Pilih nama pegawai terlebih dahulu untuk memunculkan link...">
                     <button class="btn btn-success" type="button" onclick="bukaFolderDrive()">Buka Folder & Upload</button>
                 </div>
+                <small class="text-muted"><i>*Klik tombol hijau di atas untuk membuka folder Drive khusus milik Anda, lalu seret/upload file sertifikat Anda ke dalamnya.</i></small>
             </div>
 
             <hr>
 
-            <h5 class="mb-3">Realisasi Bulanan</h5>
+            <div class="alert alert-warning p-2 text-center">
+                <small><b>Perhatian:</b> Kolom Bulan (JP & Sertifikat) dikunci. Hanya Admin yang dapat memperbarui nilai capaian bulan melalui database utama.</small>
+            </div>
+
+            <h5 class="mb-3">Realisasi Bulanan (Hanya Lihat / Read-Only)</h5>
             <div class="table-responsive">
                 <table class="table table-bordered text-center align-middle">
                     <thead class="table-light">
@@ -111,18 +116,15 @@
             </div>
 
             <div class="row mt-4">
-                <div class="col-md-6"><div class="summary-box text-success">Total Capaian JP: <span id="totalJp">0</span> / <span id="displayTargetJp">20</span></div></div>
-                <div class="col-md-6"><div class="summary-box text-primary">Total Capaian Sertifikat: <span id="totalSert">0</span> / 9</div></div>
+                <div class="col-md-6"><div class="summary-box text-success">Total Capaian JP: <span id="totalJp">0</span> / <span id="displayTargetJp">20</span><br>Persentase Capaian JP: <span id="persenJp">0%</span></div></div>
+                <div class="col-md-6"><div class="summary-box text-primary">Total Capaian Sertifikat: <span id="totalSert">0</span> / 9<br>Persentase Capaian Sertifikat: <span id="persenSert">0%</span></div></div>
             </div>
 
             <hr class="mt-4">
 
             <div class="row mb-3">
                 <div class="col-md-6 mb-3">
-                    <label class="form-label">
-                        Keikutsertaan Pertama 
-                        <span class="text-danger" style="cursor:pointer; font-size:10px;" onclick="bukaEditAdmin()">[Unlock Edit]</span>
-                    </label>
+                    <label class="form-label">Keikutsertaan Pertama</label>
                     <select id="keikutsertaanPertama" class="form-select" disabled>
                         <option value="">-- Pilih Bulan --</option>
                         <option value="Januari">Januari</option><option value="Februari">Februari</option><option value="Maret">Maret</option><option value="April">April</option><option value="Mei">Mei</option><option value="Juni">Juni</option><option value="Juli">Juli</option><option value="Agustus">Agustus</option><option value="September">September</option><option value="Oktober">Oktober</option><option value="November">November</option><option value="Desember">Desember</option>
@@ -130,7 +132,7 @@
                 </div>
                 <div class="col-md-6 mb-3">
                     <label class="form-label">Update SIPKA / SIMPEG</label>
-                    <select id="updateSipka" class="form-select">
+                    <select id="updateSipka" class="form-select" autocomplete="off">
                         <option value="">-- Pilih Status --</option>
                         <option value="SUDAH">SUDAH</option><option value="BELUM">BELUM</option>
                     </select>
@@ -147,7 +149,7 @@
 
 <script>
 const GIST_ID = "ffcb2afb05ff27b7b9d79f815c9e8885";
-const GITHUB_TOKEN = "ghp_" + "ZyTNg544CAM2WQfIk0qbqRmzrYZeAB1K0HcM"; 
+const GITHUB_TOKEN = "ghp_" + "ZyTNg544CAM2WQfIk0qbqRmzrYZeAB1K0HcM"; // Pastikan token dipecah dan valid
 
 window.globalDatabase = {};
 
@@ -219,7 +221,7 @@ document.addEventListener("DOMContentLoaded", function() {
         const selectedNip = this.value;
         const pegawai = dataPegawai.find(p => p.nip === selectedNip);
         
-        // Logika Bulan Berjalan
+        // Logika Penguncian Bulan (Juni 2026 = index 5)
         const currentMonthIndex = new Date().getMonth(); 
         const jpInputs = document.querySelectorAll('.jp-input');
         const sertInputs = document.querySelectorAll('.sert-input');
@@ -245,29 +247,25 @@ document.addEventListener("DOMContentLoaded", function() {
                 jpInputs[i].value = rJP[months[i]] || 0;
                 sertInputs[i].value = rSert[months[i]] || 0;
                 
-                // Kunci bulan selain bulan berjalan
-                jpInputs[i].readOnly = (i !== currentMonthIndex);
-                sertInputs[i].readOnly = (i !== currentMonthIndex);
+                // Kunci/Buka kunci input
+                const isCurrentMonth = (i === currentMonthIndex);
+                jpInputs[i].readOnly = !isCurrentMonth;
+                sertInputs[i].readOnly = !isCurrentMonth;
+                jpInputs[i].style.backgroundColor = isCurrentMonth ? "#fff" : "#e9ecef";
+                sertInputs[i].style.backgroundColor = isCurrentMonth ? "#fff" : "#e9ecef";
             }
         } else {
+            // Reset ke kondisi terkunci jika belum pilih pegawai
             document.querySelectorAll('.form-control').forEach(el => { if(el.id!=='targetJp' && el.id!=='targetSertifikat') el.value = "" });
-            jpInputs.forEach(el => { el.value = 0; el.readOnly = true; });
-            sertInputs.forEach(el => { el.value = 0; el.readOnly = true; });
+            jpInputs.forEach(el => { el.value = 0; el.readOnly = true; el.style.backgroundColor = "#e9ecef"; });
+            sertInputs.forEach(el => { el.value = 0; el.readOnly = true; el.style.backgroundColor = "#e9ecef"; });
+            document.getElementById('targetJp').value = 20; 
+            document.getElementById('displayTargetJp').innerText = 20;
         }
         calculateTotals();
     });
     loadDatabaseGist();
 });
-
-function bukaEditAdmin() {
-    const pass = prompt("Password Admin:");
-    if(pass === "adminbpbd") {
-        document.getElementById('keikutsertaanPertama').disabled = false;
-        alert("Akses Edit Terbuka!");
-    } else {
-        alert("Password Salah!");
-    }
-}
 
 async function loadDatabaseGist() {
     document.getElementById('loadingInfo').style.display = 'block';
@@ -306,8 +304,6 @@ async function simpanKeGist() {
     const selectNama = document.getElementById('selectNama');
     if(!selectNama.value) { alert("Pilih pegawai!"); return; }
     const nipPegawai = selectNama.value;
-    
-    // Perbarui data dengan input user
     const recordDatabase = {
         nip: nipPegawai,
         nama: selectNama.options[selectNama.selectedIndex].text,
@@ -333,9 +329,9 @@ async function simpanKeGist() {
     }
     
     recordDatabase.total_capaian_jp = document.getElementById('totalJp').innerText;
-    recordDatabase.persen_jp = document.getElementById('persenJp').innerText;
+    recordDatabase.persentase_jp = document.getElementById('persenJp').innerText;
     recordDatabase.total_capaian_sertifikat = document.getElementById('totalSert').innerText;
-    recordDatabase.persen_sertifikat = document.getElementById('persenSert').innerText;
+    recordDatabase.persentase_sertifikat = document.getElementById('persenSert').innerText;
 
     window.globalDatabase[nipPegawai] = recordDatabase;
 
@@ -355,7 +351,7 @@ async function simpanKeGist() {
 
         if (response.ok) {
             alert("✅ Data berhasil disimpan!");
-            location.reload(); // Refresh halaman setelah sukses
+            location.reload();
         } else {
             const err = await response.json();
             alert("Gagal: " + (err.message || "Unknown error"));
