@@ -149,15 +149,14 @@
 
 <script>
 const GIST_ID = "ffcb2afb05ff27b7b9d79f815c9e8885";
-const GITHUB_TOKEN = "ghp_" + "ZyTNg544CAM2WQfIk0qbqRmzrYZeAB1K0HcM";
+const GITHUB_TOKEN = "ghp_" + "ZyTNg544CAM2WQfIk0qbqRmzrYZeAB1K0HcM"; 
 
 window.globalDatabase = {};
 
 document.addEventListener("DOMContentLoaded", function() {
-    // FORCE RESET: Mengosongkan nilai form saat halaman dimuat
-    document.getElementById('selectNama').value = "";
-    document.getElementById('keikutsertaanPertama').value = "";
-    document.getElementById('updateSipka').value = "";
+    document.getElementById('selectNama').selectedIndex = 0;
+    document.getElementById('keikutsertaanPertama').selectedIndex = 0;
+    document.getElementById('updateSipka').selectedIndex = 0;
 
     const dataPegawai = [
         {"nama": "Drs.STEFANUS TRIADI ATMONO, M.Si.", "nip": "197009071990031002", "jabatan": "Kepala Pelaksana BPBD", "rumpun": "JPT", "status": "PNS"}, 
@@ -243,7 +242,8 @@ document.addEventListener("DOMContentLoaded", function() {
             
             const myData = window.globalDatabase[selectedNip] || {};
             document.getElementById('keikutsertaanPertama').value = myData.keikutsertaan_pertama || "";
-            document.getElementById('updateSipka').value = myData.update_sipka || "";
+            // Reset SIPKA Dropdown ke Default
+            document.getElementById('updateSipka').selectedIndex = 0;
             
             const rJP = myData.realisasi_jp_bulanan || {};
             const rSert = myData.realisasi_sertifikat_bulanan || {};
@@ -264,7 +264,7 @@ document.addEventListener("DOMContentLoaded", function() {
             sertInputs.forEach(el => { el.value = 0; el.readOnly = true; el.style.backgroundColor = "#e9ecef"; });
             document.getElementById('targetJp').value = 20; 
             document.getElementById('displayTargetJp').innerText = 20;
-            document.getElementById('updateSipka').value = ""; // Pastikan kembali ke opsi kosong
+            document.getElementById('updateSipka').selectedIndex = 0;
         }
         calculateTotals();
     });
