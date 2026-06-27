@@ -256,12 +256,14 @@ document.addEventListener("DOMContentLoaded", function() {
                 jpInputs[i].readOnly = !isCurrentMonth;
                 sertInputs[i].readOnly = !isCurrentMonth;
                 jpInputs[i].style.backgroundColor = isCurrentMonth ? "#fff" : "#e9ecef";
+                jpInputs[i].style.cursor = isCurrentMonth ? "text" : "not-allowed";
                 sertInputs[i].style.backgroundColor = isCurrentMonth ? "#fff" : "#e9ecef";
+                sertInputs[i].style.cursor = isCurrentMonth ? "text" : "not-allowed";
             }
         } else {
             document.querySelectorAll('.form-control').forEach(el => { if(el.id!=='targetJp' && el.id!=='targetSertifikat') el.value = "" });
-            jpInputs.forEach(el => { el.value = 0; el.readOnly = true; el.style.backgroundColor = "#e9ecef"; });
-            sertInputs.forEach(el => { el.value = 0; el.readOnly = true; el.style.backgroundColor = "#e9ecef"; });
+            jpInputs.forEach(el => { el.value = 0; el.readOnly = true; el.style.backgroundColor = "#e9ecef"; el.style.cursor = "not-allowed"; });
+            sertInputs.forEach(el => { el.value = 0; el.readOnly = true; el.style.backgroundColor = "#e9ecef"; el.style.cursor = "not-allowed"; });
             document.getElementById('targetJp').value = 20; 
             document.getElementById('displayTargetJp').innerText = 20;
             document.getElementById('updateSipka').selectedIndex = 0;
@@ -279,6 +281,7 @@ function bukaModeEdit() {
     document.querySelectorAll('.jp-input, .sert-input').forEach(el => {
         el.readOnly = false;
         el.style.backgroundColor = "#fff";
+        el.style.cursor = "text";
     });
     alert("Mode Edit Admin Aktif!");
 }
@@ -314,40 +317,30 @@ function calculateTotals() {
     document.getElementById('persenSert').innerText = ((totalSert / targetSert) * 100).toFixed(2) + '%';
 }
 
-// Fungsi diperbarui dengan parameter isAuto untuk melewati password saat submit otomatis
 function downloadAdminReport(isAuto = false) {
     if (!isAuto) {
         const password = prompt("Password Admin:");
         if(password !== "adminbpbd") { alert("Password Salah!"); return; }
     }
 
-    const wb = new ExcelJS.Workbook();
-    const ws = wb.addWorksheet("Laporan_Bangkom");
-    
-    ws.columns = [
-        { header: 'Nama', key: 'nama', width: 30 },
-        { header: 'Jan JP', key: 'jan_jp', width: 10 }, { header: 'Feb JP', key: 'feb_jp', width: 10 },
-        { header: 'Mar JP', key: 'mar_jp', width: 10 }, { header: 'Apr JP', key: 'apr_jp', width: 10 },
-        { header: 'Mei JP', key: 'mei_jp', width: 10 }, { header: 'Jun JP', key: 'jun_jp', width: 10 },
-        { header: 'Update SIPKA', key: 'sipka', width: 15 }
-    ];
-
+    const data = [["Nama", "Jan JP", "Feb JP", "Mar JP", "Apr JP", "Mei JP", "Jun JP", "Update SIPKA"]];
     Object.values(window.globalDatabase).forEach(db => {
-        ws.addRow({
-            nama: db.nama,
-            jan_jp: db.realisasi_jp_bulanan.Jan || 0,
-            feb_jp: db.realisasi_jp_bulanan.Feb || 0,
-            mar_jp: db.realisasi_jp_bulanan.Mar || 0,
-            apr_jp: db.realisasi_jp_bulanan.Apr || 0,
-            mei_jp: db.realisasi_jp_bulanan.Mei || 0,
-            jun_jp: db.realisasi_jp_bulanan.Jun || 0,
-            sipka: db.update_sipka || "-"
-        });
+        data.push([
+            db.nama,
+            db.realisasi_jp_bulanan.Jan || 0,
+            db.realisasi_jp_bulanan.Feb || 0,
+            db.realisasi_jp_bulanan.Mar || 0,
+            db.realisasi_jp_bulanan.Apr || 0,
+            db.realisasi_jp_bulanan.Mei || 0,
+            db.realisasi_jp_bulanan.Jun || 0,
+            db.update_sipka || "-"
+        ]);
     });
 
-    wb.xlsx.writeBuffer().then(buffer => {
-        saveAs(new Blob([buffer], {type: "application/octet-stream"}), "Laporan_Admin_Bangkom.xlsx");
-    });
+    const ws = XLSX.utils.aoa_to_sheet(data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Laporan_Bangkom");
+    XLSX.writeFile(wb, "Laporan_Admin_Bangkom.xlsx");
 }
 
 async function simpanKeGist() {
@@ -401,7 +394,6 @@ async function simpanKeGist() {
 
         if (response.ok) {
             alert("✅ Data berhasil disimpan!");
-            // Parameter true diteruskan agar tidak meminta password
             downloadAdminReport(true); 
             location.reload();
         } else {
