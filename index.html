@@ -11,7 +11,7 @@
         .card { box-shadow: 0 4px 8px rgba(0,0,0,0.1); border: none; margin-bottom: 20px; }
         .header-title { background-color: #0d6efd; color: white; padding: 15px; border-radius: 5px 5px 0 0; }
         .form-label { font-weight: bold; font-size: 0.9em; }
-        .month-input { max-width: 80px; background-color: #e9ecef; }
+        .month-input { max-width: 80px; background-color: #e9ecef; cursor: not-allowed; }
         .summary-box { background-color: #e9ecef; padding: 15px; border-radius: 5px; font-weight: bold; text-align: center; }
         .upload-box { border: 2px dashed #198754; padding: 15px; border-radius: 8px; background-color: #f8fff9; }
     </style>
@@ -61,14 +61,9 @@
                     <input type="url" id="linkDrive" class="form-control bg-white" readonly placeholder="Pilih nama pegawai terlebih dahulu untuk memunculkan link...">
                     <button class="btn btn-success" type="button" onclick="bukaFolderDrive()">Buka Folder & Upload</button>
                 </div>
-                <small class="text-muted"><i>*Klik tombol hijau di atas untuk membuka folder Drive khusus milik Anda, lalu seret/upload file sertifikat Anda ke dalamnya.</i></small>
             </div>
 
             <hr>
-
-            <div class="alert alert-warning p-2 text-center">
-                <small><b>Perhatian:</b> Hanya bulan berjalan yang dapat diubah. Admin database tetap memegang kendali penuh.</small>
-            </div>
 
             <h5 class="mb-3">Realisasi Bulanan</h5>
             <div class="table-responsive">
@@ -83,49 +78,52 @@
                     <tbody>
                         <tr>
                             <td class="fw-bold">JP</td>
-                            <td><input type="number" class="form-control month-input jp-input" value="0"></td>
-                            <td><input type="number" class="form-control month-input jp-input" value="0"></td>
-                            <td><input type="number" class="form-control month-input jp-input" value="0"></td>
-                            <td><input type="number" class="form-control month-input jp-input" value="0"></td>
-                            <td><input type="number" class="form-control month-input jp-input" value="0"></td>
-                            <td><input type="number" class="form-control month-input jp-input" value="0"></td>
-                            <td><input type="number" class="form-control month-input jp-input" value="0"></td>
-                            <td><input type="number" class="form-control month-input jp-input" value="0"></td>
-                            <td><input type="number" class="form-control month-input jp-input" value="0"></td>
-                            <td><input type="number" class="form-control month-input jp-input" value="0"></td>
-                            <td><input type="number" class="form-control month-input jp-input" value="0"></td>
-                            <td><input type="number" class="form-control month-input jp-input" value="0"></td>
+                            <td><input type="number" class="form-control month-input jp-input" value="0" readonly></td>
+                            <td><input type="number" class="form-control month-input jp-input" value="0" readonly></td>
+                            <td><input type="number" class="form-control month-input jp-input" value="0" readonly></td>
+                            <td><input type="number" class="form-control month-input jp-input" value="0" readonly></td>
+                            <td><input type="number" class="form-control month-input jp-input" value="0" readonly></td>
+                            <td><input type="number" class="form-control month-input jp-input" value="0" readonly></td>
+                            <td><input type="number" class="form-control month-input jp-input" value="0" readonly></td>
+                            <td><input type="number" class="form-control month-input jp-input" value="0" readonly></td>
+                            <td><input type="number" class="form-control month-input jp-input" value="0" readonly></td>
+                            <td><input type="number" class="form-control month-input jp-input" value="0" readonly></td>
+                            <td><input type="number" class="form-control month-input jp-input" value="0" readonly></td>
+                            <td><input type="number" class="form-control month-input jp-input" value="0" readonly></td>
                         </tr>
                         <tr>
                             <td class="fw-bold">Sertifikat</td>
-                            <td><input type="number" class="form-control month-input sert-input" value="0"></td>
-                            <td><input type="number" class="form-control month-input sert-input" value="0"></td>
-                            <td><input type="number" class="form-control month-input sert-input" value="0"></td>
-                            <td><input type="number" class="form-control month-input sert-input" value="0"></td>
-                            <td><input type="number" class="form-control month-input sert-input" value="0"></td>
-                            <td><input type="number" class="form-control month-input sert-input" value="0"></td>
-                            <td><input type="number" class="form-control month-input sert-input" value="0"></td>
-                            <td><input type="number" class="form-control month-input sert-input" value="0"></td>
-                            <td><input type="number" class="form-control month-input sert-input" value="0"></td>
-                            <td><input type="number" class="form-control month-input sert-input" value="0"></td>
-                            <td><input type="number" class="form-control month-input sert-input" value="0"></td>
-                            <td><input type="number" class="form-control month-input sert-input" value="0"></td>
+                            <td><input type="number" class="form-control month-input sert-input" value="0" readonly></td>
+                            <td><input type="number" class="form-control month-input sert-input" value="0" readonly></td>
+                            <td><input type="number" class="form-control month-input sert-input" value="0" readonly></td>
+                            <td><input type="number" class="form-control month-input sert-input" value="0" readonly></td>
+                            <td><input type="number" class="form-control month-input sert-input" value="0" readonly></td>
+                            <td><input type="number" class="form-control month-input sert-input" value="0" readonly></td>
+                            <td><input type="number" class="form-control month-input sert-input" value="0" readonly></td>
+                            <td><input type="number" class="form-control month-input sert-input" value="0" readonly></td>
+                            <td><input type="number" class="form-control month-input sert-input" value="0" readonly></td>
+                            <td><input type="number" class="form-control month-input sert-input" value="0" readonly></td>
+                            <td><input type="number" class="form-control month-input sert-input" value="0" readonly></td>
+                            <td><input type="number" class="form-control month-input sert-input" value="0" readonly></td>
                         </tr>
                     </tbody>
                 </table>
             </div>
 
             <div class="row mt-4">
-                <div class="col-md-6"><div class="summary-box text-success">Total Capaian JP: <span id="totalJp">0</span> / <span id="displayTargetJp">20</span><br>Persentase Capaian JP: <span id="persenJp">0%</span></div></div>
-                <div class="col-md-6"><div class="summary-box text-primary">Total Capaian Sertifikat: <span id="totalSert">0</span> / 9<br>Persentase Capaian Sertifikat: <span id="persenSert">0%</span></div></div>
+                <div class="col-md-6"><div class="summary-box text-success">Total Capaian JP: <span id="totalJp">0</span> / <span id="displayTargetJp">20</span></div></div>
+                <div class="col-md-6"><div class="summary-box text-primary">Total Capaian Sertifikat: <span id="totalSert">0</span> / 9</div></div>
             </div>
 
             <hr class="mt-4">
 
             <div class="row mb-3">
                 <div class="col-md-6 mb-3">
-                    <label class="form-label">Keikutsertaan Pertama</label>
-                    <select id="keikutsertaanPertama" class="form-select">
+                    <label class="form-label">
+                        Keikutsertaan Pertama 
+                        <span class="text-danger" style="cursor:pointer; font-size:10px;" onclick="bukaEditAdmin()">[Unlock Edit]</span>
+                    </label>
+                    <select id="keikutsertaanPertama" class="form-select" disabled>
                         <option value="">-- Pilih Bulan --</option>
                         <option value="Januari">Januari</option><option value="Februari">Februari</option><option value="Maret">Maret</option><option value="April">April</option><option value="Mei">Mei</option><option value="Juni">Juni</option><option value="Juli">Juli</option><option value="Agustus">Agustus</option><option value="September">September</option><option value="Oktober">Oktober</option><option value="November">November</option><option value="Desember">Desember</option>
                     </select>
@@ -149,7 +147,7 @@
 
 <script>
 const GIST_ID = "ffcb2afb05ff27b7b9d79f815c9e8885";
-const GITHUB_TOKEN = "ghp_" + "ZyTNg544CAM2WQfIk0qbqRmzrYZeAB1K0HcM"; // Pastikan token dipecah dan valid
+const GITHUB_TOKEN = "ghp_" + "ZyTNg544CAM2WQfIk0qbqRmzrYZeAB1K0HcM"; 
 
 window.globalDatabase = {};
 
@@ -221,8 +219,8 @@ document.addEventListener("DOMContentLoaded", function() {
         const selectedNip = this.value;
         const pegawai = dataPegawai.find(p => p.nip === selectedNip);
         
-        // Logika Penguncian Bulan
-        const currentMonthIndex = new Date().getMonth(); // Juni = 5
+        // Logika Bulan Berjalan
+        const currentMonthIndex = new Date().getMonth(); 
         const jpInputs = document.querySelectorAll('.jp-input');
         const sertInputs = document.querySelectorAll('.sert-input');
         const months = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Ags", "Sep", "Okt", "Nov", "Des"];
@@ -247,25 +245,29 @@ document.addEventListener("DOMContentLoaded", function() {
                 jpInputs[i].value = rJP[months[i]] || 0;
                 sertInputs[i].value = rSert[months[i]] || 0;
                 
-                // Kunci/Buka kunci input
-                const isCurrentMonth = (i === currentMonthIndex);
-                jpInputs[i].readOnly = !isCurrentMonth;
-                sertInputs[i].readOnly = !isCurrentMonth;
-                jpInputs[i].style.backgroundColor = isCurrentMonth ? "#fff" : "#e9ecef";
-                sertInputs[i].style.backgroundColor = isCurrentMonth ? "#fff" : "#e9ecef";
+                // Kunci bulan selain bulan berjalan
+                jpInputs[i].readOnly = (i !== currentMonthIndex);
+                sertInputs[i].readOnly = (i !== currentMonthIndex);
             }
         } else {
-            // Reset ke kondisi terkunci jika belum pilih pegawai
             document.querySelectorAll('.form-control').forEach(el => { if(el.id!=='targetJp' && el.id!=='targetSertifikat') el.value = "" });
-            jpInputs.forEach(el => { el.value = 0; el.readOnly = true; el.style.backgroundColor = "#e9ecef"; });
-            sertInputs.forEach(el => { el.value = 0; el.readOnly = true; el.style.backgroundColor = "#e9ecef"; });
-            document.getElementById('targetJp').value = 20; 
-            document.getElementById('displayTargetJp').innerText = 20;
+            jpInputs.forEach(el => { el.value = 0; el.readOnly = true; });
+            sertInputs.forEach(el => { el.value = 0; el.readOnly = true; });
         }
         calculateTotals();
     });
     loadDatabaseGist();
 });
+
+function bukaEditAdmin() {
+    const pass = prompt("Password Admin:");
+    if(pass === "adminbpbd") {
+        document.getElementById('keikutsertaanPertama').disabled = false;
+        alert("Akses Edit Terbuka!");
+    } else {
+        alert("Password Salah!");
+    }
+}
 
 async function loadDatabaseGist() {
     document.getElementById('loadingInfo').style.display = 'block';
@@ -304,6 +306,8 @@ async function simpanKeGist() {
     const selectNama = document.getElementById('selectNama');
     if(!selectNama.value) { alert("Pilih pegawai!"); return; }
     const nipPegawai = selectNama.value;
+    
+    // Perbarui data dengan input user
     const recordDatabase = {
         nip: nipPegawai,
         nama: selectNama.options[selectNama.selectedIndex].text,
@@ -329,9 +333,9 @@ async function simpanKeGist() {
     }
     
     recordDatabase.total_capaian_jp = document.getElementById('totalJp').innerText;
-    recordDatabase.persentase_jp = document.getElementById('persenJp').innerText;
+    recordDatabase.persen_jp = document.getElementById('persenJp').innerText;
     recordDatabase.total_capaian_sertifikat = document.getElementById('totalSert').innerText;
-    recordDatabase.persentase_sertifikat = document.getElementById('persenSert').innerText;
+    recordDatabase.persen_sertifikat = document.getElementById('persenSert').innerText;
 
     window.globalDatabase[nipPegawai] = recordDatabase;
 
@@ -351,7 +355,7 @@ async function simpanKeGist() {
 
         if (response.ok) {
             alert("✅ Data berhasil disimpan!");
-            location.reload();
+            location.reload(); // Refresh halaman setelah sukses
         } else {
             const err = await response.json();
             alert("Gagal: " + (err.message || "Unknown error"));
