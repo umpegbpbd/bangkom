@@ -394,7 +394,6 @@ async function simpanKeGist() {
 
         if (response.ok) {
             alert("✅ Data berhasil disimpan!");
-            downloadAdminReport(true); 
             location.reload();
         } else {
             const err = await response.json();
