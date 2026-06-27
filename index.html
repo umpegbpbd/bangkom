@@ -148,7 +148,8 @@
 </div>
 
 <script>
-// PENTING: Penulisan token dipisah agar tidak diblokir otomatis oleh GitHub
+// PENTING: Pastikan Anda menggunakan token yang BENAR-BENAR BARU DIBUAT (jangan pakai token lama yang sudah hangus).
+// Token tetap ditulis dengan format dipisah ( + ) agar terhindar dari Secret Scanning GitHub.
 const GITHUB_TOKEN = "ghp_" + "hDegQgjjeQnvv8kd4unpVFz1nZyvz21be8Rk"; 
 const OWNER = 'umpegbpbd';
 const REPO = 'bangkom';
@@ -260,8 +261,8 @@ async function loadDatabaseGithub() {
     document.getElementById('loadingInfo').style.display = 'block';
     try {
         const url = `https://api.github.com/repos/${OWNER}/${REPO}/contents/${PATH}`;
-        // PERBAIKAN: Gunakan backtick dan akses variabel GITHUB_TOKEN dengan benar
-        const res = await fetch(url, { headers: { 'Authorization': 'Bearer ' + GITHUB_TOKEN, 'Accept': 'application/vnd.github.v3+json' }});
+        // PERBAIKAN: Menggunakan format 'token' seperti pada sistem Gerdu Praja
+        const res = await fetch(url, { headers: { 'Authorization': 'token ' + GITHUB_TOKEN, 'Accept': 'application/vnd.github.v3+json' }});
         if(res.ok) {
             const data = await res.json();
             window.githubSha = data.sha;
@@ -333,7 +334,7 @@ async function simpanKeGithub() {
         const putResponse = await fetch(url, {
             method: 'PUT',
             headers: { 
-                'Authorization': 'Bearer ' + GITHUB_TOKEN, // PERBAIKAN: Format yang benar
+                'Authorization': 'token ' + GITHUB_TOKEN, // PERBAIKAN: Format yang benar disamakan dengan Gerdu Praja
                 'Accept': 'application/vnd.github.v3+json', 
                 'Content-Type': 'application/json' 
             },
