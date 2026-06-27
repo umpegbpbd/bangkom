@@ -154,10 +154,10 @@ const GITHUB_TOKEN = "ghp_" + "ZyTNg544CAM2WQfIk0qbqRmzrYZeAB1K0HcM";
 window.globalDatabase = {};
 
 document.addEventListener("DOMContentLoaded", function() {
-    // Force reset form fields on every load
-    document.getElementById('selectNama').selectedIndex = 0;
-    document.getElementById('keikutsertaanPertama').selectedIndex = 0;
-    document.getElementById('updateSipka').selectedIndex = 0;
+    // FORCE RESET: Mengosongkan nilai form saat halaman dimuat
+    document.getElementById('selectNama').value = "";
+    document.getElementById('keikutsertaanPertama').value = "";
+    document.getElementById('updateSipka').value = "";
 
     const dataPegawai = [
         {"nama": "Drs.STEFANUS TRIADI ATMONO, M.Si.", "nip": "197009071990031002", "jabatan": "Kepala Pelaksana BPBD", "rumpun": "JPT", "status": "PNS"}, 
@@ -242,7 +242,6 @@ document.addEventListener("DOMContentLoaded", function() {
             document.getElementById('displayTargetJp').innerText = newTargetJp;
             
             const myData = window.globalDatabase[selectedNip] || {};
-            // Keikutsertaan pertama tetap diisi jika ada, tapi disable
             document.getElementById('keikutsertaanPertama').value = myData.keikutsertaan_pertama || "";
             document.getElementById('updateSipka').value = myData.update_sipka || "";
             
@@ -265,7 +264,7 @@ document.addEventListener("DOMContentLoaded", function() {
             sertInputs.forEach(el => { el.value = 0; el.readOnly = true; el.style.backgroundColor = "#e9ecef"; });
             document.getElementById('targetJp').value = 20; 
             document.getElementById('displayTargetJp').innerText = 20;
-            document.getElementById('updateSipka').selectedIndex = 0; // Force reset dropdown
+            document.getElementById('updateSipka').value = ""; // Pastikan kembali ke opsi kosong
         }
         calculateTotals();
     });
