@@ -154,10 +154,10 @@ const GITHUB_TOKEN = "ghp_" + "ZyTNg544CAM2WQfIk0qbqRmzrYZeAB1K0HcM";
 window.globalDatabase = {};
 
 document.addEventListener("DOMContentLoaded", function() {
-    // Reset form field agar tidak menyimpan state lama
-    document.getElementById('selectNama').value = "";
-    document.getElementById('keikutsertaanPertama').value = "";
-    document.getElementById('updateSipka').value = "";
+    // Force reset form fields on every load
+    document.getElementById('selectNama').selectedIndex = 0;
+    document.getElementById('keikutsertaanPertama').selectedIndex = 0;
+    document.getElementById('updateSipka').selectedIndex = 0;
 
     const dataPegawai = [
         {"nama": "Drs.STEFANUS TRIADI ATMONO, M.Si.", "nip": "197009071990031002", "jabatan": "Kepala Pelaksana BPBD", "rumpun": "JPT", "status": "PNS"}, 
@@ -226,7 +226,6 @@ document.addEventListener("DOMContentLoaded", function() {
         const selectedNip = this.value;
         const pegawai = dataPegawai.find(p => p.nip === selectedNip);
         
-        // Logika Penguncian Bulan (Juni 2026 = index 5)
         const currentMonthIndex = new Date().getMonth(); 
         const jpInputs = document.querySelectorAll('.jp-input');
         const sertInputs = document.querySelectorAll('.sert-input');
@@ -243,8 +242,10 @@ document.addEventListener("DOMContentLoaded", function() {
             document.getElementById('displayTargetJp').innerText = newTargetJp;
             
             const myData = window.globalDatabase[selectedNip] || {};
+            // Keikutsertaan pertama tetap diisi jika ada, tapi disable
             document.getElementById('keikutsertaanPertama').value = myData.keikutsertaan_pertama || "";
             document.getElementById('updateSipka').value = myData.update_sipka || "";
+            
             const rJP = myData.realisasi_jp_bulanan || {};
             const rSert = myData.realisasi_sertifikat_bulanan || {};
             
@@ -252,7 +253,6 @@ document.addEventListener("DOMContentLoaded", function() {
                 jpInputs[i].value = rJP[months[i]] || 0;
                 sertInputs[i].value = rSert[months[i]] || 0;
                 
-                // Kunci/Buka kunci input
                 const isCurrentMonth = (i === currentMonthIndex);
                 jpInputs[i].readOnly = !isCurrentMonth;
                 sertInputs[i].readOnly = !isCurrentMonth;
@@ -260,12 +260,12 @@ document.addEventListener("DOMContentLoaded", function() {
                 sertInputs[i].style.backgroundColor = isCurrentMonth ? "#fff" : "#e9ecef";
             }
         } else {
-            // Reset ke kondisi terkunci jika belum pilih pegawai
             document.querySelectorAll('.form-control').forEach(el => { if(el.id!=='targetJp' && el.id!=='targetSertifikat') el.value = "" });
             jpInputs.forEach(el => { el.value = 0; el.readOnly = true; el.style.backgroundColor = "#e9ecef"; });
             sertInputs.forEach(el => { el.value = 0; el.readOnly = true; el.style.backgroundColor = "#e9ecef"; });
             document.getElementById('targetJp').value = 20; 
             document.getElementById('displayTargetJp').innerText = 20;
+            document.getElementById('updateSipka').selectedIndex = 0; // Force reset dropdown
         }
         calculateTotals();
     });
@@ -280,8 +280,6 @@ async function loadDatabaseGist() {
         if(res.ok) {
             const data = await res.json();
             window.globalDatabase = JSON.parse(data.files['database_bangkom.json'].content);
-            const select = document.getElementById('selectNama');
-            if (select.value) { select.dispatchEvent(new Event('change')); }
         }
     } catch(e) { console.log("Database loading error: ", e); }
     document.getElementById('loadingInfo').style.display = 'none';
