@@ -140,10 +140,8 @@
             </div>
 
             <div class="d-flex justify-content-between mt-4">
-                <div>
-                    <button type="button" class="btn btn-warning me-2" onclick="bukaModeEdit()">🔓 Aktifkan Edit Admin</button>
-                    <button type="button" class="btn btn-success" onclick="downloadExcelAdmin()">📥 Download Excel (Admin)</button>
-                </div>
+                <button type="button" class="btn btn-warning" onclick="bukaModeEdit()">🔓 Aktifkan Edit Admin</button>
+                <button type="button" class="btn btn-info text-white" onclick="downloadAdminReport()">📊 Download Laporan Admin</button>
                 <button type="button" class="btn btn-primary fw-bold px-5" onclick="simpanKeGist()">SUBMIT DATA SAYA</button>
             </div>
         </div>
@@ -208,7 +206,7 @@ document.addEventListener("DOMContentLoaded", function() {
         {"nama": "SITI ROBIAH", "nip": "199410012025212021", "jabatan": "Pengadministrasi Perkantoran", "rumpun": "PPPK TEKNIS", "status": "PPPK", "folder_drive": "https://drive.google.com/drive/u/6/folders/1mGeqPXV8aawDzhpgfq3mOs6Vkg7LGyge"}, 
         {"nama": "DWI MARTASARININGSIH", "nip": "199403032025212025", "jabatan": "Pengadministrasi Perkantoran", "rumpun": "PPPK TEKNIS", "status": "PPPK", "folder_drive": "https://drive.google.com/drive/u/6/folders/1pFh8ORbUXQfthKAc9ihC0b2klU7k-gPq"}, 
         {"nama": "ANDRIK PRAYUGO", "nip": "199112152025211035", "jabatan": "Operator Layanan Operasional", "rumpun": "PPPK TEKNIS", "status": "PPPK", "folder_drive": "https://drive.google.com/drive/u/6/folders/16CowkVTj84Kb75dceyK5H06MqIpZzgvN"}, 
-        {"nama": "NIKO KURNIAWAN", "nip": "198508312025211037", "jabatan": "Pengelola Umum Operasional", "rumpun": "PPPK TEKNIS", "status": "PPPK"}, "folder_drive": "https://drive.google.com/drive/u/6/folders/1hJ5l9lSVsnrwLjGDv2V3aWCDd5ay-zhI"},
+        {"nama": "NIKO KURNIAWAN", "nip": "198508312025211037", "jabatan": "Pengelola Umum Operasional", "rumpun": "PPPK TEKNIS", "status": "PPPK"}, "folder_drive": "https://drive.google.com/drive/u/6/folders/1hJ5l9lSVsnrwLjGDv2V3aWCDd5ay-zhI"}, 
         {"nama": "PRENDICHANATA", "nip": "199209072025211044", "jabatan": "Pengelola Umum Operasional", "rumpun": "PPPK TEKNIS", "status": "PPPK", "folder_drive": "https://drive.google.com/drive/u/6/folders/1qoFNXw7BZrkqbza6pTaor2yHP5MlnthI"}, 
         {"nama": "HINN BONKE SAMALIWU", "nip": "199601042025211025", "jabatan": "Operator Layanan Operasional", "rumpun": "PPPK TEKNIS", "status": "PPPK", "folder_drive": "https://drive.google.com/drive/u/6/folders/1hJJbIBvriwZ6GgzTo-qg0DYXw3V6C8i1"}
     ];
@@ -316,6 +314,39 @@ function calculateTotals() {
     document.getElementById('persenSert').innerText = ((totalSert / targetSert) * 100).toFixed(2) + '%';
 }
 
+function downloadAdminReport() {
+    const password = prompt("Password Admin:");
+    if(password !== "adminbpbd") { alert("Password Salah!"); return; }
+
+    const wb = new ExcelJS.Workbook();
+    const ws = wb.addWorksheet("Laporan_Bangkom");
+    
+    ws.columns = [
+        { header: 'Nama', key: 'nama', width: 30 },
+        { header: 'Jan JP', key: 'jan_jp', width: 10 }, { header: 'Feb JP', key: 'feb_jp', width: 10 },
+        { header: 'Mar JP', key: 'mar_jp', width: 10 }, { header: 'Apr JP', key: 'apr_jp', width: 10 },
+        { header: 'Mei JP', key: 'mei_jp', width: 10 }, { header: 'Jun JP', key: 'jun_jp', width: 10 },
+        { header: 'Update SIPKA', key: 'sipka', width: 15 }
+    ];
+
+    Object.values(window.globalDatabase).forEach(db => {
+        ws.addRow({
+            nama: db.nama,
+            jan_jp: db.realisasi_jp_bulanan.Jan || 0,
+            feb_jp: db.realisasi_jp_bulanan.Feb || 0,
+            mar_jp: db.realisasi_jp_bulanan.Mar || 0,
+            apr_jp: db.realisasi_jp_bulanan.Apr || 0,
+            mei_jp: db.realisasi_jp_bulanan.Mei || 0,
+            jun_jp: db.realisasi_jp_bulanan.Jun || 0,
+            sipka: db.update_sipka || "-"
+        });
+    });
+
+    wb.xlsx.writeBuffer().then(buffer => {
+        saveAs(new Blob([buffer], {type: "application/octet-stream"}), "Laporan_Admin_Bangkom.xlsx");
+    });
+}
+
 async function simpanKeGist() {
     const selectNama = document.getElementById('selectNama');
     if(!selectNama.value) { alert("Pilih pegawai!"); return; }
@@ -367,69 +398,14 @@ async function simpanKeGist() {
 
         if (response.ok) {
             alert("✅ Data berhasil disimpan!");
+            // Sesuai perintah: Menambahkan unduhan Excel otomatis setelah submit
+            downloadAdminReport(); 
             location.reload();
         } else {
             const err = await response.json();
             alert("Gagal: " + (err.message || "Unknown error"));
         }
     } catch (error) { alert("Error: " + error.message); }
-}
-
-function downloadExcelAdmin() {
-    const password = prompt("Password Admin:");
-    if(password !== "adminbpbd") { alert("Password Salah!"); return; }
-    
-    const pegawais = window.dataPegawai;
-    const db = window.globalDatabase;
-    
-    const months = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Ags", "Sep", "Okt", "Nov", "Des"];
-    
-    const header = [
-        "NO", "NAMA", "NIP", "JABATAN", "RUMPUN JABATAN", "STATUS", "TARGET JP", "TARGET SERTIFIKAT"
-    ];
-    months.forEach(m => {
-        header.push(`${m.toUpperCase()} JP`);
-        header.push(`${m.toUpperCase()} SERT`);
-    });
-    header.push("TOTAL CAPAIAN JP", "TOTAL CAPAIAN SERTIFIKAT", "KEIKUTSERTAAN PERTAMA", "UPDATE SIPKA/SIMPEG", "LINK SERTIFIKAT");
-
-    const data = [
-        ["LAPORAN PENGEMBANGAN KOMPETENSI APARATUR SIPIL NEGARA (ASN)"],
-        ["BADAN PENANGGULANGAN BENCANA DAERAH"],
-        [],
-        header
-    ];
-
-    pegawais.forEach((p, i) => {
-        const empData = db[p.nip] || {};
-        const rJP = empData.realisasi_jp_bulanan || {};
-        const rSert = empData.realisasi_sertifikat_bulanan || {};
-        
-        let targetJp = (p.status && p.status.toUpperCase() === "PPPK") ? 24 : 20;
-        
-        const row = [
-            i+1, p.nama, p.nip, p.jabatan, p.rumpun, p.status, targetJp, 9
-        ];
-        
-        months.forEach(m => {
-            row.push(rJP[m] || 0);
-            row.push(rSert[m] || 0);
-        });
-        
-        row.push(
-            empData.total_capaian_jp || 0,
-            empData.total_capaian_sertifikat || 0,
-            empData.keikutsertaan_pertama || "-",
-            empData.update_sipka || "-",
-            empData.link_drive_sertifikat || p.folder_drive || "-"
-        );
-        data.push(row);
-    });
-
-    const wb = XLSX.utils.book_new();
-    const ws = XLSX.utils.aoa_to_sheet(data);
-    XLSX.utils.book_append_sheet(wb, ws, "Rekap Laporan");
-    XLSX.writeFile(wb, "Rekap_Laporan_Bangkom.xlsx");
 }
 </script>
 </body>
