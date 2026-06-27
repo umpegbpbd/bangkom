@@ -132,7 +132,7 @@
                 </div>
                 <div class="col-md-6 mb-3">
                     <label class="form-label">Update SIPKA / SIMPEG</label>
-                    <select id="updateSipka" class="form-select" autocomplete="off">
+                    <select id="updateSipka" class="form-select" autocomplete="off" required>
                         <option value="">-- Pilih Status --</option>
                         <option value="SUDAH">SUDAH</option><option value="BELUM">BELUM</option>
                     </select>
@@ -152,7 +152,6 @@
 const GIST_ID = "ffcb2afb05ff27b7b9d79f815c9e8885";
 const GITHUB_TOKEN = "ghp_" + "ZyTNg544CAM2WQfIk0qbqRmzrYZeAB1K0HcM"; 
 
-// Mengubah dari objek ke array untuk menyimpan riwayat
 window.globalDatabase = [];
 
 document.addEventListener("DOMContentLoaded", function() {
@@ -242,7 +241,6 @@ document.addEventListener("DOMContentLoaded", function() {
             document.getElementById('targetJp').value = newTargetJp;
             document.getElementById('displayTargetJp').innerText = newTargetJp;
             
-            // Mencari data terakhir untuk pegawai ini jika perlu (hanya buat tampilan awal)
             const myData = window.globalDatabase.filter(d => d.nip === selectedNip).pop() || {};
             document.getElementById('keikutsertaanPertama').value = myData.keikutsertaan_pertama || "";
             document.getElementById('updateSipka').selectedIndex = 0;
@@ -296,7 +294,6 @@ async function loadDatabaseGist() {
         if(res.ok) {
             const data = await res.json();
             const content = JSON.parse(data.files['database_bangkom.json'].content);
-            // Menangani format lama (objek) atau baru (array)
             window.globalDatabase = Array.isArray(content) ? content : Object.values(content);
         }
     } catch(e) { console.log("Database loading error: ", e); }
@@ -351,7 +348,11 @@ function downloadAdminReport(isAuto = false) {
 
 async function simpanKeGist() {
     const selectNama = document.getElementById('selectNama');
+    const updateSipka = document.getElementById('updateSipka');
+    
     if(!selectNama.value) { alert("Pilih pegawai!"); return; }
+    if(!updateSipka.value) { alert("Harap pilih status Update SIPKA / SIMPEG!"); return; }
+
     const nipPegawai = selectNama.value;
     const recordDatabase = {
         nip: nipPegawai,
@@ -362,9 +363,9 @@ async function simpanKeGist() {
         target_minimal_jp: document.getElementById('targetJp').value,
         target_minimal_sertifikat: document.getElementById('targetSertifikat').value,
         keikutsertaan_pertama: document.getElementById('keikutsertaanPertama').value,
-        update_sipka: document.getElementById('updateSipka').value,
+        update_sipka: updateSipka.value,
         link_drive_sertifikat: document.getElementById('linkDrive').value,
-        waktu_update: new Date().toLocaleString() // Timestamp format lokal yang jelas
+        waktu_update: new Date().toLocaleString()
     };
 
     const jpInputs = document.querySelectorAll('.jp-input');
@@ -382,7 +383,6 @@ async function simpanKeGist() {
     recordDatabase.total_capaian_sertifikat = document.getElementById('totalSert').innerText;
     recordDatabase.persentase_sertifikat = document.getElementById('persenSert').innerText;
 
-    // Menambahkan record baru ke array (tidak menimpa)
     window.globalDatabase.push(recordDatabase);
 
     try {
