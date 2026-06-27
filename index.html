@@ -140,6 +140,7 @@
             </div>
 
             <div class="d-flex justify-content-between mt-4">
+                <button type="button" class="btn btn-warning" onclick="bukaModeEdit()">🔓 Aktifkan Edit Admin</button>
                 <button type="button" class="btn btn-secondary" onclick="downloadExcel()">🔒 Download Report Excel (Admin)</button>
                 <button type="button" class="btn btn-primary fw-bold px-5" onclick="simpanKeGist()">SUBMIT DATA SAYA</button>
             </div>
@@ -242,7 +243,6 @@ document.addEventListener("DOMContentLoaded", function() {
             
             const myData = window.globalDatabase[selectedNip] || {};
             document.getElementById('keikutsertaanPertama').value = myData.keikutsertaan_pertama || "";
-            // Reset SIPKA Dropdown ke Default
             document.getElementById('updateSipka').selectedIndex = 0;
             
             const rJP = myData.realisasi_jp_bulanan || {};
@@ -265,11 +265,23 @@ document.addEventListener("DOMContentLoaded", function() {
             document.getElementById('targetJp').value = 20; 
             document.getElementById('displayTargetJp').innerText = 20;
             document.getElementById('updateSipka').selectedIndex = 0;
+            document.getElementById('keikutsertaanPertama').selectedIndex = 0;
         }
         calculateTotals();
     });
     loadDatabaseGist();
 });
+
+function bukaModeEdit() {
+    const password = prompt("Password Admin:");
+    if(password !== "adminbpbd") { alert("Password Salah!"); return; }
+    document.getElementById('keikutsertaanPertama').disabled = false;
+    document.querySelectorAll('.jp-input, .sert-input').forEach(el => {
+        el.readOnly = false;
+        el.style.backgroundColor = "#fff";
+    });
+    alert("Mode Edit Admin Aktif!");
+}
 
 async function loadDatabaseGist() {
     document.getElementById('loadingInfo').style.display = 'block';
