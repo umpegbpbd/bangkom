@@ -314,9 +314,12 @@ function calculateTotals() {
     document.getElementById('persenSert').innerText = ((totalSert / targetSert) * 100).toFixed(2) + '%';
 }
 
-function downloadAdminReport() {
-    const password = prompt("Password Admin:");
-    if(password !== "adminbpbd") { alert("Password Salah!"); return; }
+// Fungsi diperbarui dengan parameter isAuto untuk melewati password saat submit otomatis
+function downloadAdminReport(isAuto = false) {
+    if (!isAuto) {
+        const password = prompt("Password Admin:");
+        if(password !== "adminbpbd") { alert("Password Salah!"); return; }
+    }
 
     const wb = new ExcelJS.Workbook();
     const ws = wb.addWorksheet("Laporan_Bangkom");
@@ -398,7 +401,8 @@ async function simpanKeGist() {
 
         if (response.ok) {
             alert("✅ Data berhasil disimpan!");
-            downloadAdminReport(); 
+            // Parameter true diteruskan agar tidak meminta password
+            downloadAdminReport(true); 
             location.reload();
         } else {
             const err = await response.json();
